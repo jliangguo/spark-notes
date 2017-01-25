@@ -28,9 +28,13 @@ Spark应用从输入创建顶层抽象RDD（Resilient Distributed Dataset），�
 
 ## Why Spark
 
+### 分布式数据批处理领域的王者
+
+Spark借鉴了很多Hadoop的优秀思想，且能与HDFS和YARN一起高效的工作。一方面，Spark提升了分布式数据处理的性能，另一方面又极大地简化了分布式处理引擎，是MapReduce的更好的替代者。
+
 ### 为不同负载提供统一的引擎
 
-Spark为批处理、交互式和流处理等不同形式的负载提供了一个简洁的API。通过Spark Streaming应用框架来支持近实时的流处理负载，
+Spark为批处理、交互式和流处理等不同形式的负载提供了一个简洁的API。通过Spark Streaming应用框架来支持近实时的流处理负载，通过Spark Shell来支持交互式查询负载。
 
 > TODO ETL和统计分析负载与Spark Streaming及交互式负载的差别在哪？需要说明。
 
