@@ -28,6 +28,14 @@ Spark应用从输入创建顶层抽象RDD（Resilient Distributed Dataset），�
 
 ## Why Spark
 
+### 为不同负载提供统一的引擎
+
+Spark为批处理、交互式和流处理等不同形式的负载提供了一个简洁的API。通过Spark Streaming应用框架来支持近实时的流处理负载，
+
+> TODO ETL和统计分析负载与Spark Streaming及交互式负载的差别在哪？需要说明。
+
+
+
 
 
 
