@@ -35,9 +35,61 @@ Spark中的基本组件：
 
 ### Driver
 
+Spark Driver或者说是应用的driver进程是独立的JVM进程，它持有SparkContext，是Spark应用的Master节点。在Spark中由SparkContext负责和ClusterManager通信，进行资源的申请、任务的分配和监控等；当Executor部分运行完毕后，Driver负责将SparkContext关闭。通常用SparkContext代表Drive。
+
+Driver的组件如下：
+
+![](/assets/spark-driver.png)
+
+Driver参数设置：
+
+参数|参数默认值|描述|
+--|--|--|
+spark.driver.blockManager.port|spark.blockManager.port|Port to use for the BlockManager on the driver.More precisely, spark.driver.blockManager.port is used when NettyBlockTransferService is created (while SparkEnv is created for the driver).
+spark.driver.host|localHostName|The address of the node where the driver runs on. Set when SparkContext is created
+spark.driver.port|0|The port the driver listens to. It is first set to 0 in the driver when SparkContext is initialized. <p>Set to the port of RpcEnv of the driver (in SparkEnv.create) or when client-mode ApplicationMaster connected to the driver (in Spark on YARN).
+spark.driver.memory|1g|The driver’s memory size (in MiBs).
+spark.driver.cores|1|The number of CPU cores assigned to the driver in cluster deploy mode.<p>NOTE: When Client is created (for Spark on YARN in cluster mode only), it sets the number of cores for ApplicationManager using spark.driver.cores.
+spark.driver.extraLibraryPath|||		
+spark.driver.extraJavaOptions||Additional JVM options for the driver.
+spark.driver.appUIAddress<p>spark.driver.appUIAddress is used exclusively in Spark on YARN. It is set when YarnClientSchedulerBackend starts to run ExecutorLauncher (and register ApplicationMaster for the Spark application).	|spark.driver.libraryPath||	
+spark.driver.extraClassPath||the additional classpath entries (e.g. jars and directories) that should be added to the driver’s classpath in **cluster** deploy mode.|
+
+> 在client部署模式下，可以用配置文件或命令行参数设置`spark.driver.extraClassPath`。不要使用`SparkConf`，因为为时已晚了，JVM已启动起来了。
+
+> 在`spark-submit`中，可以使用`--driver-class-path`命令行参数复写配置文件中的`spark.driver.extraClassPath`参数。
 
 ### Executor
 
+Executor是负责执行task的分布式组件，如下场景会创建Executor：
+
+- `CoarseGrainedExecutorBackend`收到`RegisteredExecutor`消息时（Standalone和YARN部署模式下）
+
+- `MesosExecutorBackend`注册时（Spark on Mesos部署模式下）
+
+- `LocalEndpoint`创建时（local模式下）
+
+Executor参数设置：
+
+参数|默认值|描述|
+--|--|--|
+spark.executor.cores||Number of cores for an executor.
+spark.executor.extraClassPath|(empty)|	List of URLs representing user-defined class path entries that are added to an executor’s class path.<p>Each entry is separated by system-dependent path separator, i.e. : on Unix/MacOS systems and ; on Microsoft Windows.
+spark.executor.extraJavaOptions||Extra Java options for executors.<p>Used to prepare the command to launch CoarseGrainedExecutorBackend in a YARN container.
+spark.executor.extraLibraryPath|Extra library paths separated by system-dependent path separator, i.e. : on Unix/MacOS systems and ; on Microsoft Windows.<p>Used to prepare the command to launch CoarseGrainedExecutorBackend in a YARN container.
+spark.executor.heartbeat.maxFailures|60|Number of times an executor will try to send heartbeats to the driver before it gives up and exits (with exit code 56).<p>NOTE: It was introduced in SPARK-13522 Executor should kill itself when it’s unable to heartbeat to the driver more than N times.
+spark.executor.heartbeatInterval|10s|Interval after which an executor reports heartbeat and metrics for active tasks to the driver.
+spark.executor.id|||		
+spark.executor.instances|0|Number of executors to use.
+spark.executor.logs.rolling.maxSize|||		
+spark.executor.logs.rolling.maxRetainedFiles|||		
+spark.executor.logs.rolling.strategy|||		
+spark.executor.logs.rolling.time.interval|||		
+spark.executor.memory|1g|Amount of memory to use per executor process.<p>Equivalent to SPARK_EXECUTOR_MEMORY environment variable.
+spark.executor.port|||		
+spark.executor.userClassPathFirst|false|Flag to control whether to load classes in user jars before those in Spark jars.
+spark.executor.uri||Equivalent to SPARK_EXECUTOR_URI
+spark.task.maxDirectResultSize|1048576B||	
 
 ## Spark运行逻辑
 
