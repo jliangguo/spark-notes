@@ -76,7 +76,7 @@ Executor参数设置：
 spark.executor.cores||Number of cores for an executor.
 spark.executor.extraClassPath|(empty)|	List of URLs representing user-defined class path entries that are added to an executor’s class path.<p>Each entry is separated by system-dependent path separator, i.e. : on Unix/MacOS systems and ; on Microsoft Windows.
 spark.executor.extraJavaOptions||Extra Java options for executors.<p>Used to prepare the command to launch CoarseGrainedExecutorBackend in a YARN container.
-spark.executor.extraLibraryPath|Extra library paths separated by system-dependent path separator, i.e. : on Unix/MacOS systems and ; on Microsoft Windows.<p>Used to prepare the command to launch CoarseGrainedExecutorBackend in a YARN container.
+spark.executor.extraLibraryPath||Extra library paths separated by system-dependent path separator, i.e. : on Unix/MacOS systems and ; on Microsoft Windows.<p>Used to prepare the command to launch CoarseGrainedExecutorBackend in a YARN container.
 spark.executor.heartbeat.maxFailures|60|Number of times an executor will try to send heartbeats to the driver before it gives up and exits (with exit code 56).<p>NOTE: It was introduced in SPARK-13522 Executor should kill itself when it’s unable to heartbeat to the driver more than N times.
 spark.executor.heartbeatInterval|10s|Interval after which an executor reports heartbeat and metrics for active tasks to the driver.
 spark.executor.id|||		
