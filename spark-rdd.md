@@ -81,6 +81,22 @@ saveAsObjectFile(path)<p>(Java and Scala)	|Write the elements of the dataset in 
 countByKey()|Only available on RDDs of type (K, V). Returns a hashmap of (K, Int) pairs with the count of each key.
 foreach(func)|Run a function func on each element of the dataset. This is usually done for side effects such as updating an Accumulator or interacting with external storage systems. <p>Note: modifying variables other than Accumulators outside of the foreach() may result in undefined behavior. See Understanding closures for more details.
 
+## RDD依赖关系
+
+不同的操作依据其特性，可能会产生不同的依赖，RDD之间的依赖关系有以下两种：
+
+- **窄依赖(Narrow Dependencies)**
+ 
+ 一个父RDD分区最多被一个子RDD分区引用，表现为一个父RDD的分区；
+对应于一个子RDD的分区或多个父RDD的分区对应于一个子RDD的分区，也就是说一个父RDD的一个分区不可能对应一个子RDD的多个分区，如map、filter、union等操作则产生窄依赖；
+- **宽依赖(Wide Dependencies)**
+ 
+ 一个子RDD的分区依赖于父RDD的多个分区或所有分区，也就是说存在一个父RDD的一个分区对应一个子RDD的多个分区，如groupByKey等操作则产生宽依赖操作；
+
+下图中，蓝色实心方框代表一个partition，蓝边矩形框代表一个RDD：
+
+![](/assets/rdd-dependencies.jpg)
+
 ## References
 
 1. [【Spark】弹性分布式数据集RDD概述](http://blog.jasonding.top/2015/07/08/Spark/%E3%80%90Spark%E3%80%91%E5%BC%B9%E6%80%A7%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E9%9B%86RDD/)
