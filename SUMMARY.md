@@ -9,4 +9,5 @@
 * [Spark TaskScheduler](spark-taskscheduler.md)
 * [Spark Shuffle](spark-shuffle.md)
 * [Spark Memory Manage](spark-memory-manage.md)
+* [Spark Fault-tolerance](spark-fault-tolerance.md)
 
