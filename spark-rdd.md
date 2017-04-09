@@ -97,6 +97,30 @@ foreach(func)|Run a function func on each element of the dataset. This is usuall
 
 ![](/assets/rdd-dependencies.jpg)
 
+## Stage DAG
+
+Spark提交Job之后会把Job生成多个Stage，多个Stage之间是有依赖的，Stage之间的依赖关系就构成了**DAG**（有向无环图）。
+
+对于窄依赖，Spark会尽量多地将RDD转换放在同一个Stage中；而对于宽依赖，但大多数时候是shuffle操作，因此Spark会将此Stage定义为`ShuffleMapStage`，以便于向`MapOutputTracker`注册shuffle操作。Spark通常将shuffle操作定义为stage的边界。
+
+![](/assets/rdd-stage-example.jpg)
+
+## RDD数据存储管理
+
+RDD可以被抽象地理解为一个大的数组（Array），但是这个数组是分布在集群上的。逻辑上RDD的每个分区叫一个**Partition**。
+
+在Spark的执行过程中，RDD经历一个个的Transfomation算子之后，最后通过Action算子进行触发操作。 逻辑上每经历一次变换，就会将RDD转换为一个新的RDD，RDD之间通过Lineage产生依赖关系，这个关系在容错中有很重要的作用。变换的输入和输出都是RDD。 RDD会被划分成很多的分区分布到集群的多个节点中。分区是个逻辑概念，**变换前后的新旧分区在物理上可能是同一块内存存储**。 这是很重要的优化，以防止函数式数据不变性（immutable）导致的内存需求无限扩张。有些RDD是计算的中间结果，其分区并不一定有相应的内存或磁盘数据与之对应，如果要迭代使用数据，可以调cache()函数缓存数据。
+
+![](/assets/rdd-storage.jpg)
+
+上图中，RDD1含有5个分区（p1、 p2、 p3、 p4、 p5），分别存储在4个节点（Node1、 node2、 Node3、 Node4）中。RDD2含有3个分区（p1、 p2、 p3），分布在3个节点（Node1、 Node2、 Node3）中。
+
+在物理上，RDD对象实质上是一个元数据结构，存储着Block、 Node等的映射关系，以及其他的元数据信息。一个RDD就是一组分区，在物理数据存储上，RDD的每个分区对应的就是一个Block，Block可以存储在内存，当内存不够时可以存储到磁盘上。
+
+每个Block中存储着RDD所有数据项的一个子集，暴露给用户的可以是一个Block的迭代器（例如，用户可以通过mapPartitions获得分区迭代器进行操作），也可以就是一个数据项（例如，通过map函数对每个数据项并行计算）。
+
+如果是从HDFS等外部存储作为输入数据源，数据按照HDFS中的数据分布策略进行数据分区，HDFS中的一个Block对应Spark的一个分区。同时Spark支持重分区，数据通过Spark默认的或者用户自定义的分区器决定数据块分布在哪些节点。例如，支持**Hash分区**（按照数据项的Key值取Hash值，Hash值相同的元素放入同一个分区之内）和**Range分区**（将属于同一数据范围的数据放入同一分区）等分区策略。
+
 ## References
 
 1. [【Spark】弹性分布式数据集RDD概述](http://blog.jasonding.top/2015/07/08/Spark/%E3%80%90Spark%E3%80%91%E5%BC%B9%E6%80%A7%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E9%9B%86RDD/)
